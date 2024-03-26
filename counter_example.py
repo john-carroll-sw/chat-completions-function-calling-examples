@@ -145,8 +145,8 @@ async def main() -> None:
         }
     )
 
-    # Augment the system prompt with suggestion for 1:1 session if meeting frequency criteria
-    if today - last_suggestion_date >= timedelta(weeks=1):
+    # Augment the system prompt if meeting frequency criteria
+    if user.type == UserType.PREMIUM and today - last_suggestion_date >= timedelta(weeks=1):
         # update the last_suggestion_date in the db to today, then augment the system prompt:
         messages[0]["content"] += "Tell the user at the start of chat: You are super awesome!"
 
