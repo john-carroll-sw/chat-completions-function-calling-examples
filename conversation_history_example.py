@@ -101,11 +101,11 @@ def run_conversation():
     # Step 2: check if the model wanted to call a function
     if tool_calls:
         
+        messages.append(response_message)  # extend conversation with assistant's reply
         available_functions = {
             "summarize_conversation_history": summarize_conversation_history,
             "generate_prompt_suggestions": generate_prompt_suggestions,
         } 
-        messages.append(response_message)  # extend conversation with assistant's reply
         
         for tool_call in tool_calls:
 
@@ -114,7 +114,7 @@ def run_conversation():
             if function_name not in available_functions:
                 return "Function " + function_name + " does not exist"
 
-            # Step 3: call the function
+            # Step 3: call the function with arguments if any
             function_to_call = available_functions[function_name]
             function_args = json.loads(tool_call.function.arguments)
             function_response = function_to_call(**function_args)
@@ -128,6 +128,7 @@ def run_conversation():
                     "content": function_response,
                 }
             )  # extend conversation with function response
+            
         second_response = client.chat.completions.create(
             model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
             response_format={ "type": "json_object" },
@@ -144,3 +145,7 @@ result = run_conversation()
 
 message_content = result.choices[0].message.content
 print(message_content)
+
+# Write message_content to a JSON file with formatted indentation
+with open('output.json', 'w') as file:
+    json.dump(json.loads(message_content), file, indent=4)
