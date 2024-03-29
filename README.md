@@ -3,7 +3,7 @@ AOAI Function Calling Examples
 
 ## Description
 
-This repository contains simple examples of using function calling using the Chat Completions API for AOAI. If using the OAI client, change the client accordingly
+This repository contains simple examples of using function calling using the Chat Completions API for AOAI. If using the OAI client, change the client accordingly.
 
 ## Files
 
