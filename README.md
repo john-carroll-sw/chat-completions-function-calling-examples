@@ -1,5 +1,4 @@
-# Project Name
-AOAI Function Calling Examples
+# Function Calling Examples in Azure Open AI
 
 ## Description
 
