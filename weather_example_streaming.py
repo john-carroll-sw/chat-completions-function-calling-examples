@@ -26,6 +26,32 @@ def get_current_weather(location, unit="fahrenheit"):
         return json.dumps({"location": location, "temperature": "unknown"})
 
 
+def get_tool_calls(stream):
+    tool_calls = []
+    delta = None
+
+    for chunk in stream:
+        delta = chunk.choices[0].delta if chunk.choices and chunk.choices[0].delta is not None else None
+        # print(delta)
+
+        if delta and delta.content:
+            print(delta.content, end="", flush=True)
+
+        elif delta and delta.tool_calls:
+            tc_chunk_list = delta.tool_calls
+            for tc_chunk in tc_chunk_list:
+                if len(tool_calls) <= tc_chunk.index:
+                    tool_calls.append({"id": "", "type": "function", "function": {"name": "", "arguments": ""}})
+                tc = tool_calls[tc_chunk.index]
+
+                if tc_chunk.id:
+                    tc["id"] += tc_chunk.id
+                if tc_chunk.function.name:
+                    tc["function"]["name"] += tc_chunk.function.name
+                if tc_chunk.function.arguments:
+                    tc["function"]["arguments"] += tc_chunk.function.arguments
+    return tool_calls
+
 def run_conversation():
     # Step 1: send the conversation and available functions to the model
     messages = [
@@ -128,32 +154,6 @@ def run_conversation():
                     await asyncio.sleep(0.1)
 
         asyncio.run(print_stream_chunks(stream))
-
-def get_tool_calls(stream):
-    tool_calls = []
-    delta = None
-
-    for chunk in stream:
-        delta = chunk.choices[0].delta if chunk.choices and chunk.choices[0].delta is not None else None
-        # print(delta)
-
-        if delta and delta.content:
-            print(delta.content)
-
-        elif delta and delta.tool_calls:
-            tc_chunk_list = delta.tool_calls
-            for tc_chunk in tc_chunk_list:
-                if len(tool_calls) <= tc_chunk.index:
-                    tool_calls.append({"id": "", "type": "function", "function": {"name": "", "arguments": ""}})
-                tc = tool_calls[tc_chunk.index]
-
-                if tc_chunk.id:
-                    tc["id"] += tc_chunk.id
-                if tc_chunk.function.name:
-                    tc["function"]["name"] += tc_chunk.function.name
-                if tc_chunk.function.arguments:
-                    tc["function"]["arguments"] += tc_chunk.function.arguments
-    return tool_calls
 
 result = run_conversation()
 

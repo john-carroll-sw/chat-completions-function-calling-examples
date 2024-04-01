@@ -31,7 +31,7 @@ def increment_question_counter():
 
 
 # List of tools available to the model
-def getTools():
+def get_tools():
     return [
         {
             "type": "function",
@@ -150,7 +150,7 @@ async def main() -> None:
         # update the last_suggestion_date in the db to today, then augment the system prompt:
         messages[0]["content"] += "Tell the user at the start of chat: You are super awesome!"
 
-    tools = getTools()
+    tools = get_tools()
 
     chatting = True
     while chatting:
