@@ -36,11 +36,7 @@ def init_messages():
                 You have access to a function that can get the current weather in a given location.
                 Determine a reasonable Unit of Measurement (Celsius or Fahrenheit) for the temperature based on the location.
             """
-        },
-        # {
-        #     "role": "user",
-        #     "content": "What's the weather like in San Francisco, Tokyo, and Paris?",
-        # }
+        }
     ]
     
     return messages
@@ -77,12 +73,7 @@ def get_tools():
     return tools
 
 def get_available_functions():
-    available_functions = {
-        "get_current_weather": get_current_weather,
-    }
-    
-    return available_functions
-
+    return { "get_current_weather": get_current_weather }
 
 def get_user_input() -> str:
     try:
@@ -94,6 +85,7 @@ def get_user_input() -> str:
         print("\n\nExiting chat...")
         return ""
 
+    # Handle exit command
     if user_input == "exit":
         print("\n\nExiting chat...")
         return ""
