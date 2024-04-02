@@ -1,15 +1,17 @@
 # Function Calling Examples in Azure Open AI
 
-## Description
+### Description
 
-This repository contains simple examples of using function calling using the Chat Completions API for AOAI. If using the OAI client, change the client accordingly.
+This repository contains simple examples of using function calling with the Chat Completions API. It supports multiple clients including OpenAI, AzureOpenAI, and Ollama. Please change the client in the code accordingly based on the one you are using.
 
 ## Files
 
-- `weather_example`: This is a simple program that has a single function `get_current_weather` defined. The model says to call the function multiple times(parellel funciton calling), and after sending the function response back to the model, it decides the next step. It responds with a user-facing message which tells the user the temperature in San Francisco, Tokyo, and Paris.
-- `weather_example_streaming.py`: This is an example of how to stream the response from the model while also checking if the model wanted to make a function/tool call. It extends the `weather_example`.
-- `counter_example`: This example shows how to Do 'X' every 'frequency'. Shows how to increment a counter using function calling, counting user inputs before the assistant says something specific to a user. Also shows how to do something once every week by checking if it has been a week and then editing system prompt.
-- `conversation_history_example`: This is a simple program that showcases some functionality for doing two things: 1) summarizing conversation history, 2) providing prompt suggestions based on conversation history.
+- `func_get_weather`: (**Start here!**) This is a simple program that has a single function 'get_current_weather' defined. The model says to call the function/tool multiple times(parellel <u>function calling</u>). Our code invokes our functions and then we send the function/tool's response back to the model supplying it with additional context provided by the 'tool'. It responds with a user-facing message which tells the user the temperature in San Francisco, Tokyo, and Paris.
+- `func_get_weather_streaming`: This is an example of how to <u>stream</u> the response from the model while also checking if the model wanted to make a function/tool call. It extends the 'func_get_weather' example.
+- `func_timing_count`: This example shows how to Do 'X' every 'frequency'. Shows how to <u>manage state</u> outside the conversation. There is a function that increments a counter using <u>function calling</u>, counting user inputs before the assistant says something specific to a user. Also shows how to do something once every week by checking if it has been a week and then editing system prompt.
+- `func_conversation_history`: This is a simple program that showcases some <u>semantic functionality</u> for doing two things: 1) summarizing conversation history, 2) providing prompt suggestions based on conversation history.
+- `func_async_streaming_chat`: an example script that demonstrates handling of <u>asynchronous</u> client calls and <u>streaming</u> responses within a <u>chat loop</u>. It supports <u>function calling</u>, enabling dynamic and interactive conversations. This script is designed to provide a practical example of managing complex interactions in a chat-based interface.
+- `func_async_streaming_chat_server`: (**Most complicated**) an extension of the 'func_async_streaming_chat' script. It not only handles <u>asynchronous</u> client calls, <u>function calling</u>, and <u>streaming</u> responses within a <u>chat loop</u>, but also demonstrates an example of how to <u>format and handle server-client</u> payloads effectively. This script provides a practical example of managing complex interactions in a chat-based interface while ensuring proper communication between the server and client.
 
 
 ## Usage
