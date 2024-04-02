@@ -1,4 +1,4 @@
-# Function Calling Examples in Azure Open AI
+# Function Calling Examples using the Chat Completions API
 
 ### Description
 
