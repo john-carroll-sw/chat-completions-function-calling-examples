@@ -197,8 +197,10 @@ async def chat(messages) -> Tuple[Any, bool]:
     messages.append({ "role": "assistant", "content": full_delta_content })
     return True
 
+# Initialize the messages
+messages = init_messages()
+
 async def main() -> None:
-    messages = init_messages()
 
     chatting = True
     while chatting:

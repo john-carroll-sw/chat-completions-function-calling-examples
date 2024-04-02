@@ -177,6 +177,8 @@ async def send_chat_request(messages):
 
     # Step 2: check if the model wanted to call a function
     if not tool_calls and full_delta_content:
+        messages.append({ "role": "assistant", "content": full_delta_content })
+
         # Convert the list to a stream to return as a response
         async def list_to_stream():
             for item in stream_response1_list:
@@ -292,6 +294,7 @@ async def process_chat_response(async_generator):
             print(content, end="")
     print()
 
+
 """
     Chat
     - The main chat loop
@@ -314,8 +317,10 @@ async def chat(messages) -> Tuple[Any, bool]:
 
     return True
 
+# Initialize the messages
+messages = init_messages()
+
 async def main() -> None:
-    messages = init_messages()
 
     chatting = True
     while chatting:
