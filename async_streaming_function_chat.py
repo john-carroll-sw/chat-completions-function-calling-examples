@@ -27,22 +27,8 @@ def get_current_weather(location, unit="fahrenheit"):
     else:
         return json.dumps({"location": location, "temperature": "unknown"})
 
-def init_messages():
-    messages = [
-        { 
-            "role": "system", 
-            "content": """
-                You are a helpful assistant.
-                You have access to a function that can get the current weather in a given location.
-                Determine a reasonable Unit of Measurement (Celsius or Fahrenheit) for the temperature based on the location.
-            """
-        }
-    ]
-    
-    return messages
-
 def get_tools():
-    tools = [
+    return [
         {
             "type": "function",
             "function": {
@@ -69,11 +55,21 @@ def get_tools():
             },
         }
     ]
-    
-    return tools
 
 def get_available_functions():
     return { "get_current_weather": get_current_weather }
+
+def init_messages():
+    return [
+        { 
+            "role": "system", 
+            "content": """
+                You are a helpful assistant.
+                You have access to a function that can get the current weather in a given location.
+                Determine a reasonable Unit of Measurement (Celsius or Fahrenheit) for the temperature based on the location.
+            """
+        }
+    ]
 
 def get_user_input() -> str:
     try:
@@ -92,7 +88,7 @@ def get_user_input() -> str:
 
     return user_input
 
-async def chat(messages, tools) -> Tuple[Any, bool]:
+async def chat(messages) -> Tuple[Any, bool]:
     # User's input
     user_input = get_user_input()
     if not user_input:
@@ -103,7 +99,7 @@ async def chat(messages, tools) -> Tuple[Any, bool]:
     stream_response = await azure_openai_client.chat.completions.create(
         model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
         messages=messages,
-        tools=tools,
+        tools=get_tools(),
         tool_choice="auto",  # auto is default, but we'll be explicit
         temperature=0,  # Adjust the variance by changing the temperature value (default is 0.8)
         stream=True
@@ -185,16 +181,13 @@ async def chat(messages, tools) -> Tuple[Any, bool]:
     print("")
     messages.append({ "role": "assistant", "content": full_delta_content })
     return True
-    
 
 async def main() -> None:
-
     messages = init_messages()
-    tools = get_tools()
 
     chatting = True
     while chatting:
-        chatting = await chat(messages, tools)
+        chatting = await chat(messages)
 
 if __name__ == "__main__":
     asyncio.run(main())
