@@ -1,16 +1,31 @@
 import os
 import json
 import asyncio
+import openai
 from typing import Any, Tuple
-from openai import AsyncAzureOpenAI
 from typing import Tuple
+from dotenv import load_dotenv
 
+# Setup the OpenAI client to use either Azure, OpenAI or Ollama API
+load_dotenv()
+API_HOST = os.getenv("API_HOST")
 
-azure_openai_client = AsyncAzureOpenAI(
-    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-    api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
-)
+if API_HOST == "azure":
+    client = openai.AsyncAzureOpenAI(
+        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+        api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+        api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
+    )
+    DEPLOYMENT_NAME = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
+elif API_HOST == "openai":
+    client = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_KEY"))
+    DEPLOYMENT_NAME = os.getenv("OPENAI_MODEL")
+elif API_HOST == "ollama":
+    client = openai.AsyncOpenAI(
+        base_url="http://localhost:11434/v1",
+        api_key="nokeyneeded",
+    )
+    DEPLOYMENT_NAME = os.getenv("OLLAMA_MODEL")
 
 # Example function hard coded to return the same weather
 # In production, this could be your backend API or an external API
@@ -96,8 +111,8 @@ async def chat(messages) -> Tuple[Any, bool]:
     messages.append({"role": "user", "content": user_input})
 
     # Step 1: send the conversation and available functions to the model
-    stream_response = await azure_openai_client.chat.completions.create(
-        model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
+    stream_response = await client.chat.completions.create(
+        model=DEPLOYMENT_NAME,
         messages=messages,
         tools=get_tools(),
         tool_choice="auto",  # auto is default, but we'll be explicit
@@ -160,8 +175,8 @@ async def chat(messages) -> Tuple[Any, bool]:
                 }
             )  # extend conversation with function response
 
-        stream_response2 = await azure_openai_client.chat.completions.create(
-            model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
+        stream_response2 = await client.chat.completions.create(
+            model=DEPLOYMENT_NAME,
             messages=messages,
             temperature=0,  # Adjust the variance by changing the temperature value (default is 0.8)
             stream=True,

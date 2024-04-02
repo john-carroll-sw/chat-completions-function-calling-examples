@@ -1,20 +1,35 @@
 import os
 import json
 import asyncio
+import openai
 from typing import Any, Tuple
-from openai import AsyncAzureOpenAI
 from typing import Tuple
+from dotenv import load_dotenv
 
 """
-    Initialize the Azure OpenAI client
-    - Uses the AsyncAzureOpenAI client to handle asynchronous requests
-    - Uses the Azure OpenAI endpoint, API key, and API version from the environment variables
+    Initialize the client
+    - Setup the client to use either Azure, OpenAI or Ollama API
+    - Uses the Async client to handle asynchronous requests
+    - Uses the environment variables
 """
-azure_openai_client = AsyncAzureOpenAI(
-    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-    api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
-)
+load_dotenv()
+API_HOST = os.getenv("API_HOST")
+if API_HOST == "azure":
+    client = openai.AsyncAzureOpenAI(
+        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+        api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+        api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
+    )
+    DEPLOYMENT_NAME = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
+elif API_HOST == "openai":
+    client = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_KEY"))
+    DEPLOYMENT_NAME = os.getenv("OPENAI_MODEL")
+elif API_HOST == "ollama":
+    client = openai.AsyncOpenAI(
+        base_url="http://localhost:11434/v1",
+        api_key="nokeyneeded",
+    )
+    DEPLOYMENT_NAME = os.getenv("OLLAMA_MODEL")
 
 """
     Get the current weather
@@ -122,8 +137,8 @@ def get_user_input() -> str:
 async def send_chat_request(messages):
     
     # Step 1: send the conversation and available functions to the model
-    stream_response1 = await azure_openai_client.chat.completions.create(
-        model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
+    stream_response1 = await client.chat.completions.create(
+        model=DEPLOYMENT_NAME,
         messages=messages,
         tools=get_tools(),
         tool_choice="auto",
@@ -197,8 +212,8 @@ async def send_chat_request(messages):
                 }
             )  # extend conversation with function response
 
-        stream_response2 = await azure_openai_client.chat.completions.create(
-            model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
+        stream_response2 = await client.chat.completions.create(
+            model=DEPLOYMENT_NAME,
             messages=messages,
             temperature=0,  # Adjust the variance by changing the temperature value (default is 0.8)
             top_p=0.95,
@@ -277,6 +292,11 @@ async def process_chat_response(async_generator):
             print(content, end="")
     print()
 
+"""
+    Chat
+    - The main chat loop
+    - Handles the user input, sends the chat request, and processes the chat response
+"""
 async def chat(messages) -> Tuple[Any, bool]:
 
     # User's input

@@ -1,16 +1,31 @@
 import os
 import asyncio
 import json
-from dotenv import load_dotenv
+import openai
 from datetime import datetime, timedelta
 from enum import Enum
-from openai import AzureOpenAI
+from dotenv import load_dotenv
 
-client = AzureOpenAI(
-    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-    api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
-)
+# Setup the OpenAI client to use either Azure, OpenAI or Ollama API
+load_dotenv()
+API_HOST = os.getenv("API_HOST")
+
+if API_HOST == "azure":
+    client = openai.AzureOpenAI(
+        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+        api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+        api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
+    )
+    DEPLOYMENT_NAME = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
+elif API_HOST == "openai":
+    client = openai.OpenAI(api_key=os.getenv("OPENAI_KEY"))
+    DEPLOYMENT_NAME = os.getenv("OPENAI_MODEL")
+elif API_HOST == "ollama":
+    client = openai.AsyncOpenAI(
+        base_url="http://localhost:11434/v1",
+        api_key="nokeyneeded",
+    )
+    DEPLOYMENT_NAME = os.getenv("OLLAMA_MODEL")
 
 # User type and User class
 class UserType(Enum):
@@ -43,8 +58,7 @@ def get_tools():
         }
     ]
 
-
-async def chat(messages, tools) -> bool:
+async def chat(messages) -> bool:
     try:
         user_input = input("User:> ")
     except KeyboardInterrupt:
@@ -62,9 +76,9 @@ async def chat(messages, tools) -> bool:
 
     # Step 1: send the conversation and available functions to the model
     response = client.chat.completions.create(
-        model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
+        model=DEPLOYMENT_NAME,
         messages=messages,
-        tools=tools,
+        tools=get_tools(),
         tool_choice="auto",  # auto is default, but we'll be explicit
         temperature=1,
         max_tokens=400,
@@ -110,7 +124,7 @@ async def chat(messages, tools) -> bool:
             )  # extend conversation with function response
 
         second_response = client.chat.completions.create(
-            model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
+            model=DEPLOYMENT_NAME,
             messages=messages,
         )  # get a new response from the model where it can see the function response
         second_response_message = second_response.choices[0].message
@@ -150,11 +164,9 @@ async def main() -> None:
         # update the last_suggestion_date in the db to today, then augment the system prompt:
         messages[0]["content"] += "Tell the user at the start of chat: You are super awesome!"
 
-    tools = get_tools()
-
     chatting = True
     while chatting:
-        chatting = await chat(messages, tools)
+        chatting = await chat(messages)
 
 
 if __name__ == "__main__":

@@ -1,13 +1,28 @@
 import os
-from openai import AzureOpenAI
 import json
+import openai
+from dotenv import load_dotenv
 
-client = AzureOpenAI(
-    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-    api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
-)
+# Setup the OpenAI client to use either Azure, OpenAI or Ollama API
+load_dotenv()
+API_HOST = os.getenv("API_HOST")
 
+if API_HOST == "azure":
+    client = openai.AzureOpenAI(
+        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+        api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+        api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
+    )
+    DEPLOYMENT_NAME = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
+elif API_HOST == "openai":
+    client = openai.OpenAI(api_key=os.getenv("OPENAI_KEY"))
+    DEPLOYMENT_NAME = os.getenv("OPENAI_MODEL")
+elif API_HOST == "ollama":
+    client = openai.AsyncOpenAI(
+        base_url="http://localhost:11434/v1",
+        api_key="nokeyneeded",
+    )
+    DEPLOYMENT_NAME = os.getenv("OLLAMA_MODEL")
 
 # Example function hard coded to return the expected response from a db call
 # In production, this could be your backend API or an external API
@@ -59,15 +74,8 @@ def run_conversation():
             "role": "user",
             "content": "Summarize our chat history. And also provide chat suggestions based on our chat history.",
         },
-        # {
-        #     "role": "user",
-        #     "content": "Summarize our chat history."
-        # },
-        # {
-        #     "role": "user",
-        #     "content": "Provide chat suggestions based on our chat history.",
-        # },
     ]
+
     tools = [
         {
             "type": "function",
@@ -86,8 +94,9 @@ def run_conversation():
             },
         }
     ]
+    
     response = client.chat.completions.create(
-        model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
+        model=DEPLOYMENT_NAME,
         response_format={ "type": "json_object" },
         messages=messages,
         tools=tools,
@@ -130,7 +139,7 @@ def run_conversation():
             )  # extend conversation with function response
             
         second_response = client.chat.completions.create(
-            model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
+            model=DEPLOYMENT_NAME,
             response_format={ "type": "json_object" },
             messages=messages,
         )  # get a new response from the model where it can see the function response

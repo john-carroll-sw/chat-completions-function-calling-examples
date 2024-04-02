@@ -1,14 +1,29 @@
 import os
-from openai import AzureOpenAI
 import json
 import asyncio
+import openai
+from dotenv import load_dotenv
 
-client = AzureOpenAI(
-    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-    api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
-)
+# Setup the OpenAI client to use either Azure, OpenAI or Ollama API
+load_dotenv()
+API_HOST = os.getenv("API_HOST")
 
+if API_HOST == "azure":
+    client = openai.AzureOpenAI(
+        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+        api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+        api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
+    )
+    DEPLOYMENT_NAME = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
+elif API_HOST == "openai":
+    client = openai.OpenAI(api_key=os.getenv("OPENAI_KEY"))
+    DEPLOYMENT_NAME = os.getenv("OPENAI_MODEL")
+elif API_HOST == "ollama":
+    client = openai.AsyncOpenAI(
+        base_url="http://localhost:11434/v1",
+        api_key="nokeyneeded",
+    )
+    DEPLOYMENT_NAME = os.getenv("OLLAMA_MODEL")
 
 # Example function hard coded to return the same weather
 # In production, this could be your backend API or an external API
@@ -96,7 +111,7 @@ def run_conversation():
         }
     ]
     stream = client.chat.completions.create(
-        model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
+        model=DEPLOYMENT_NAME,
         messages=messages,
         tools=tools,
         tool_choice="auto",  # auto is default, but we'll be explicit
@@ -142,7 +157,7 @@ def run_conversation():
             )  # extend conversation with function response
 
         stream = client.chat.completions.create(
-            model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
+            model=DEPLOYMENT_NAME,
             messages=messages,
             stream=True,
         )
