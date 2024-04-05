@@ -2,7 +2,11 @@
 
 ### Description
 
-This repository contains simple examples of using function calling with the Chat Completions API. It supports multiple clients including OpenAI, AzureOpenAI, and Ollama. Please change the client in the code accordingly based on the one you are using.
+This repository contains simple examples of using function calling with the Chat Completions API. If you are unfamiliar with function calling here are some docs to get acquainted:
+- OpenAI | https://platform.openai.com/docs/guides/function-calling
+- Azure OpenAI | https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/function-calling?tabs=python
+
+The samples support multiple clients including OpenAI, AzureOpenAI, and Ollama. Please change the client using the `env.sample` to your needs.
 
 ## Files
 
@@ -20,7 +24,8 @@ To use this project, follow these steps:
 
 1. Clone the repository: `git clone <repository-url>`
 2. Navigate to the project directory: `cd <project-directory>`
-3. Run the project: `python <program.py>`
+3. Copy `.env.sample` to a new file called `.env` and configure the settings: `copy .env.sample .env`
+4. Run the project: `python <program.py>`
 
 To open this project in VS Code: 
 1. Navigate to the parent of the project directory: `cd ..\<project-directory>`
