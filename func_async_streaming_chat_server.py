@@ -3,7 +3,6 @@ import json
 import asyncio
 import openai
 from typing import Any, Tuple
-from typing import Tuple
 from dotenv import load_dotenv
 
 """
@@ -14,6 +13,7 @@ from dotenv import load_dotenv
 """
 load_dotenv()
 API_HOST = os.getenv("API_HOST")
+
 if API_HOST == "azure":
     client = openai.AsyncAzureOpenAI(
         azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),

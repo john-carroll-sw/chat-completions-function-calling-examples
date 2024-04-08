@@ -3,8 +3,11 @@
 ### Description
 
 This repository contains simple examples of using function calling with the Chat Completions API. If you are unfamiliar with function calling here are some docs to get acquainted:
-- OpenAI | https://platform.openai.com/docs/guides/function-calling
-- Azure OpenAI | https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/function-calling?tabs=python
+
+- [Prompting Guide / function_calling](https://www.promptingguide.ai/applications/function_calling)
+- [OpenAI / function-calling](https://platform.openai.com/docs/guides/function-calling)
+- [Azure OpenAI / function-calling](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/function-calling?tabs=python)
+- [Ollama / functions](https://js.langchain.com/docs/integrations/chat/ollama_functions)
 
 The samples support multiple clients including OpenAI, AzureOpenAI, and Ollama. Please change the client using the `env.sample` to your needs.
 
@@ -24,10 +27,52 @@ To use this project, follow these steps:
 
 1. Clone the repository: `git clone <repository-url>`
 2. Navigate to the project directory: `cd <project-directory>`
-3. Copy `.env.sample` to a new file called `.env` and configure the settings: `copy .env.sample .env`
-4. Run the project: `python <program.py>`
+3. Set up a Python virtual environment and activate it.
+4. Install the required packages:
 
-To open this project in VS Code: 
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+5. Copy the `.env.sample` file to a new file called `.env`:
+
+    ```bash
+    cp .env.sample .env
+    ```
+
+6. Configure the environment settings per your usage:
+
+   - For Azure OpenAI, create an Azure OpenAI gpt-3.5 or gpt-4 deployment, and customize the `.env` file with your Azure OpenAI endpoint and deployment id.
+
+        ```bash
+        API_HOST=azure
+        AZURE_OPENAI_ENDPOINT=https://<YOUR-AZURE-OPENAI-SERVICE-NAME>.openai.azure.com
+        AZURE_OPENAI_API_KEY=<YOUR-AZURE-OPENAI-API-KEY>
+        AZURE_OPENAI_API_VERSION=2024-03-01-preview
+        AZURE_OPENAI_DEPLOYMENT_NAME=<YOUR-AZURE-DEPLOYMENT-NAME>
+        AZURE_OPENAI_MODEL=gpt-4
+        ```
+
+   - For OpenAI.com, customize the `.env` file with your OpenAI API key and desired model name.
+
+        ```bash
+        API_HOST=openai
+        OPENAI_KEY=<YOUR-OPENAI-API-KEY>
+        OPENAI_MODEL=gpt-3.5-turbo
+        ```
+
+   - For Ollama, customize the `.env` file with your Ollama endpoint and model name (any model you've pulled).
+
+        ```bash
+        API_HOST=ollama
+        OLLAMA_ENDPOINT=http://localhost:11434/v1
+        OLLAMA_MODEL=llama2
+        ```
+
+7. Run the project: `python <program.py>`
+
+To open this project in VS Code:
+
 1. Navigate to the parent of the project directory: `cd ..\<project-directory>`
 2. Open in VS Code: `code <project-folder-name>`
 
