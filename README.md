@@ -2,14 +2,20 @@
 
 ### Description
 
-This repository contains simple examples of using function calling with the Chat Completions API. If you are unfamiliar with function calling here are some docs to get acquainted:
+This repository contains simple examples of using function calling with the Chat Completions API. 
+
+These basic examples in Python are designed to help those interested in learning about function calling. These examples serve as an introduction to the concept and its applications. 
+
+The repository includes examples of parallel and sequential function calling, generating prompt suggestions, conversation summarization, and timed activation of assistant behavior. These examples aim to provide a practical understanding of function calling.
+
+For those seeking something more advanced, the repository also contains a more complex example that involves the integration of function calling, asynchronous programming, and streaming responses within a chat loop. It also covers the formatting and handling of server-client payloads, which is a crucial aspect of creating a chatbot experience.
+
+If you are unfamiliar with function calling here are some docs to get acquainted:
 
 - [Prompting Guide / function_calling](https://www.promptingguide.ai/applications/function_calling)
 - [OpenAI / function-calling](https://platform.openai.com/docs/guides/function-calling)
 - [Azure OpenAI / function-calling](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/function-calling?tabs=python)
 - [Ollama / functions](https://js.langchain.com/docs/integrations/chat/ollama_functions)
-
-The samples support multiple clients including OpenAI, AzureOpenAI, and Ollama. Please change the client using the `env.sample` to your needs.
 
 ## Files
 
