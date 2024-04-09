@@ -1,29 +1,8 @@
-import os
 import json
-import openai
-from dotenv import load_dotenv
+from utils import get_function_and_args, setup_client
 
-# Setup the OpenAI client to use either Azure, OpenAI or Ollama API
-load_dotenv()
-API_HOST = os.getenv("API_HOST")
-
-if API_HOST == "azure":
-    client = openai.AzureOpenAI(
-        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-        api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-        api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
-    )
-    DEPLOYMENT_NAME = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
-elif API_HOST == "openai":
-    client = openai.OpenAI(api_key=os.getenv("OPENAI_KEY"))
-    DEPLOYMENT_NAME = os.getenv("OPENAI_MODEL")
-elif API_HOST == "ollama":
-    client = openai.AsyncOpenAI(
-        base_url="http://localhost:11434/v1",
-        api_key="nokeyneeded",
-    )
-    DEPLOYMENT_NAME = os.getenv("OLLAMA_MODEL")
-
+# Set up the OpenAI client, get the deployment name
+client, DEPLOYMENT_NAME = setup_client()
 
 # Example function hard coded to return the same weather
 # In production, this could be your backend API or an external API
@@ -105,14 +84,14 @@ def run_conversation():
         
         for tool_call in tool_calls:
 
+            # Step 3: call the function
             # Note: the JSON response may not always be valid; be sure to handle errors
             function_name = tool_call.function.name
-            if function_name not in available_functions:
-                return "Function " + function_name + " does not exist"
-        
-            # Step 3: call the function with arguments if any
-            function_to_call = available_functions[function_name]
-            function_args = json.loads(tool_call.function.arguments)
+
+            # get the function and arguments
+            function_to_call, function_args = get_function_and_args(tool_call, available_functions)
+            
+            # call the function
             function_response = function_to_call(**function_args)
 
             # Step 4: send the info for each function call and function response to the model
