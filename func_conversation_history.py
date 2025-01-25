@@ -31,7 +31,7 @@ def get_conversation_history():
     # Assume the conversation history is retrieved from a data source such as CosmosDB or a storage account
     # Possibly all parameters for user id from the user input, api/query requirements, etc. could be passed here.
     # In this example, we'll use a demo conversation history JSON
-    with open("conversation_history.json", "r") as file:
+    with open("data/conversation_history.json", "r") as file:
         conversation_history = json.load(file)
     return json.dumps(conversation_history)
 
