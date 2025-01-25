@@ -72,6 +72,9 @@ def setup_client():
     load_dotenv()
     API_HOST = os.getenv("API_HOST")
 
+    client = None
+    DEPLOYMENT_NAME = None
+
     if API_HOST == "azure":
         client = openai.AzureOpenAI(
             azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
@@ -89,6 +92,9 @@ def setup_client():
         )
         DEPLOYMENT_NAME = os.getenv("OLLAMA_MODEL")
     
+    if client is None or DEPLOYMENT_NAME is None:
+        raise ValueError("Invalid API_HOST or missing environment variables")
+
     return client, DEPLOYMENT_NAME
 
 def setup_async_client():

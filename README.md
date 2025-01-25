@@ -41,7 +41,13 @@ To use this project, follow these steps:
 
 1. Clone the repository: `git clone <repository-url>`
 2. Navigate to the project directory: `cd <project-directory>`
-3. Set up a Python virtual environment and activate it.
+3. Set up a Python virtual environment and activate it:
+
+    ```bash
+    python3 -m venv env
+    source env/bin/activate
+    ```
+
 4. Install the required packages:
 
     ```bash
