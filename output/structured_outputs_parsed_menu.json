@@ -1,0 +1,28 @@
+{
+    "items": [
+        {
+            "category": "Espresso Drinks",
+            "item": "Espresso",
+            "description": "A strong coffee brewed by forcing hot water under pressure through finely ground coffee beans.",
+            "price": "$2.99"
+        },
+        {
+            "category": "Espresso Drinks",
+            "item": "Cappuccino",
+            "description": "Espresso with steamed milk and a layer of foam.",
+            "price": "$3.99"
+        },
+        {
+            "category": "Cold Brews",
+            "item": "Cold Brew",
+            "description": "Coffee brewed cold for a smooth, rich flavor.",
+            "price": "$4.99"
+        },
+        {
+            "category": "Cold Brews",
+            "item": "Nitro Cold Brew",
+            "description": "Cold brew infused with nitrogen for a creamy texture.",
+            "price": "$5.99"
+        }
+    ]
+}

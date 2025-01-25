@@ -155,6 +155,9 @@ result = run_conversation()
 message_content = result.choices[0].message.content
 print(message_content)
 
+# Ensure the output directory exists
+os.makedirs('output', exist_ok=True)
+
 # Write message_content to a JSON file with formatted indentation
-with open('output.json', 'w') as file:
+with open('output/conversation_history_chat_output.json', 'w') as file:
     json.dump(json.loads(message_content), file, indent=4)

@@ -2,6 +2,8 @@ import openai
 from pydantic import BaseModel
 from typing import List
 from utils import setup_client
+import os
+import json
 
 # Set up the OpenAI client, get the deployment name
 client, DEPLOYMENT_NAME = setup_client()
@@ -69,6 +71,9 @@ Cold Brews
 - Nitro Cold Brew: Cold brew infused with nitrogen for a creamy texture. $5.99
 """
 
+# Ensure the output directory exists
+os.makedirs('output', exist_ok=True)
+
 # Print the Pydantic classes
 print("Pydantic classes used in the script:")
 
@@ -84,8 +89,12 @@ print("    items: List[CoffeeMenuItem]")
 print("\nParsing the following raw text:")
 print(sample_raw_text)
 
-
 parsed_menu = parse_menu_with_gpt4o(sample_raw_text, DEPLOYMENT_NAME)
 
 print("\nParsed menu in structured JSON based on the pydantic classes:")
 print_parsed_menu(parsed_menu)
+
+# Save the parsed menu to a JSON file
+if parsed_menu:
+    with open('output/structured_outputs_parsed_menu.json', 'w') as file:
+        json.dump(parsed_menu.dict(), file, indent=4)
